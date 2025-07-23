@@ -203,3 +203,31 @@
 - Tradeoff: Lost the card-like focus, but gained more space for logs, transcript, and future visualizations (e.g., waveform).
 - Next: Monitor user feedback for further tweaks (e.g., padding, background contrast).
 - Increased the height of the system logs window (from h-32 to h-64) for better readability and to allow more log lines to be visible at once.
+
+# Brainstorming - Current Session
+
+## 2025-07-23 - Backend Speech-to-Text Integration
+
+### ✅ What Worked:
+- Successfully installed `soundfile` and `faster-whisper` dependencies
+- Integrated real WhisperModel from main.py into WebSocket backend
+- Added graceful error handling for missing dependencies (similar to main.py)
+- Backend now validates chunks, logs details, and sends actual transcripts
+- Whisper model loads successfully on startup with proper error handling
+
+### 🔧 Technical Implementation:
+- Used `io.BytesIO()` to convert base64 PCM chunks to WAV in memory
+- Integrated `WhisperModel("small", device="cpu")` for transcription
+- Added dependency checks before processing chunks
+- Maintained backward compatibility with error messages for missing deps
+
+### 📊 Current Status:
+- Backend ready for real-time speech-to-text processing
+- Frontend can now receive actual transcripts instead of simulated ones
+- All chunks are properly validated and logged
+- Ready for testing with the React UI
+
+### 🎯 Next Steps:
+- Test the full pipeline with real audio files
+- Verify chunk-by-chunk transcription works as expected
+- Monitor performance and accuracy of real-time transcription

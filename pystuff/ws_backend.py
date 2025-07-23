@@ -4,8 +4,32 @@ from fastapi.responses import HTMLResponse
 import numpy as np
 import base64
 import json
+import io
+
+# SPEECH-TO-TEXT DEPENDENCIES
+try:
+    import soundfile as sf
+except ImportError:
+    print("[ERROR] soundfile not installed.")
+    sf = None
+
+try:
+    from faster_whisper import WhisperModel
+except ImportError:
+    print("[ERROR] faster-whisper not installed.")
+    WhisperModel = None
 
 app = FastAPI()
+
+# Load Whisper model once if available
+whisper_model = None
+if WhisperModel is not None:
+    try:
+        whisper_model = WhisperModel("small", device="cpu")
+        print("[INFO] Whisper model loaded successfully.")
+    except Exception as e:
+        print(f"[ERROR] Failed to load Whisper model: {e}")
+        whisper_model = None
 
 @app.get("/")
 def index():
@@ -47,7 +71,6 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            # Expecting JSON: {"chunk_idx": int, "sample_rate": int, "audio": base64-encoded PCM}
             msg = json.loads(data)
             chunk_idx = msg["chunk_idx"]
             sample_rate = msg["sample_rate"]
@@ -55,15 +78,40 @@ async def websocket_endpoint(websocket: WebSocket):
             audio_bytes = base64.b64decode(audio_b64)
             audio_np = np.frombuffer(audio_bytes, dtype=np.float32)
             print(f"[WS] Received chunk {chunk_idx+1}, samples={len(audio_np)}, sample_rate={sample_rate}")
-            # Simulate processing
-            await asyncio.sleep(0.2)
-            transcript = f"Transcript for chunk {chunk_idx+1} ({len(audio_np)/sample_rate:.1f}s)"
-            print(f"[WS] Transcript for chunk {chunk_idx+1}: {transcript}")
-            # Send result back
-            await websocket.send_json({
-                "chunk_idx": chunk_idx,
-                "transcript": transcript
-            })
-            print(f"[WS] Sent transcript for chunk {chunk_idx+1}")
+            
+            # Check if dependencies are available
+            if sf is None or whisper_model is None:
+                error_msg = "Missing dependencies: "
+                if sf is None:
+                    error_msg += "soundfile "
+                if whisper_model is None:
+                    error_msg += "faster-whisper "
+                print(f"[WS] {error_msg}")
+                await websocket.send_json({
+                    "chunk_idx": chunk_idx,
+                    "transcript": f"[ERROR] {error_msg}"
+                })
+                continue
+            
+            # Convert PCM float32 to WAV in memory
+            try:
+                with io.BytesIO() as wav_io:
+                    sf.write(wav_io, audio_np, sample_rate, format='WAV')
+                    wav_io.seek(0)
+                    # Transcribe with Whisper
+                    segments, info = whisper_model.transcribe(wav_io)
+                    text = " ".join([seg.text for seg in segments])
+                print(f"[WS] Transcript for chunk {chunk_idx+1}: {text.strip()}")
+                await websocket.send_json({
+                    "chunk_idx": chunk_idx,
+                    "transcript": text.strip()
+                })
+                print(f"[WS] Sent transcript for chunk {chunk_idx+1}")
+            except Exception as e:
+                print(f"[WS] Error processing chunk {chunk_idx+1}: {e}")
+                await websocket.send_json({
+                    "chunk_idx": chunk_idx,
+                    "transcript": f"[ERROR] {e}"
+                })
     except WebSocketDisconnect:
         print("[WS] Client disconnected.") 

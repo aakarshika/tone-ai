@@ -235,13 +235,17 @@ Deliver a beautiful, modern, and user-friendly web UI for Tone AI, prioritizing 
 - [x] Focus on file upload chunking, playback, and UI (mic code retained but hidden)
 - [x] File upload chunking and playback are working as intended
 - [ ] Add robust error handling for file upload and decoding
-- [ ] Add chunk table UI: display each chunk with columns -chunk, created, sent,recieved, transcript, play button, 
-- [ ] Add play button for each chunk to play the corresponding audio section (chunked mp3 or wav)
+- [x] Add chunk table UI: display each chunk with columns -chunk, created, sent,recieved, transcript, play button, 
+- [x] Add play button for each chunk to play the corresponding audio section (chunked mp3 or wav)
 - [ ] Enable interactive chunked audio exploration in the UI
-- [ ] After file upload, create all chunks but do not send them immediately
-- [ ] Wait for user to play the audio; as playback reaches each chunk mark (e.g., 3s, 6s, ...), send the corresponding chunk to the backend
-- [ ] Repeat for each chunk as playback progresses
-- [ ] UI should visually indicate which chunks have been sent and which are pending
+- [x] After file upload, create all chunks but do not send them immediately
+- [x] Wait for user to play the audio; as playback reaches each chunk mark (e.g., 3s, 6s, ...), send the corresponding chunk to the backend
+- [x] Repeat for each chunk as playback progresses
+- [x] UI visually indicates which chunks have been sent and which are pending
+- [x] Interactive, playback-driven chunk sending and tracking is implemented and working
+- [x] On backend, ensure received chunks are valid and log details for each chunk
+- [x] Integrate real speech-to-text from main.py for each chunk
+- [x] Send actual transcript of each chunk back to frontend instead of simulated transcript
 
 🛠️ **Currently Doing**:
 - Modern UI/UX refactor complete for mic/recording (real-time chunking works)
