@@ -12,20 +12,12 @@
 - Set up collaboration rules and gameplan
 - Initialized git repository
 
-### ❌ What Didn't Work:
-- 
-
-### 📚 What Was Learned:
-- Established clear workflow with rules.md, gameplan.md, brainstorming.md
-- WhisperX combines transcription + diarization for better accuracy
+### ❌ What Didn't Work: ffmpeg binary missing, causing [Errno 2] and conversion failure in main.py.
+### 📚 What Was Learned: ffmpeg must be installed via Homebrew (not pip), and should be tracked in a separate setup file for system dependencies.
+### 🎯 Tomorrow's Focus: Continue audio ingestion pipeline after verifying ffmpeg install and successful mp3→wav conversion.
 
 ### 🔄 What Was Skipped:
 - 
-
-### 🎯 Tomorrow's Focus:
-- Install Python dependencies
-- Test basic audio file loading with ffmpeg
-- Implement faster-whisper transcription
 
 ### 🧠 Notes & Decisions:
 - Starting with file-based pipeline before real-time

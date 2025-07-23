@@ -72,3 +72,22 @@
 - Custom emotion model training
 - Multi-language support
 - Kubernetes deployment
+
+# Setup Troubleshooting Log
+- Encountered PyAudio install error due to missing PortAudio on macOS. Fixed by running `brew install portaudio` before `pip install -r requirements.txt`.
+- All requirements now install successfully. This is a common macOS gotcha for audio projects.
+
+# AUDIO INGESTION: Fast Path Decision
+- Decision: To finish audio ingestion quickly, will focus on file-based ingestion (.wav/.mp3) and defer mic capture (TODO).
+- .wav chosen as the working format for the pipeline (uncompressed, compatible with all modules).
+- Plan: implement .wav loader and ffmpeg conversion in main.py, then run end-to-end test with a sample file.
+
+# AUDIO INGESTION: Planning & Research
+- Next steps: Confirm all audio dependencies are importable in Python, then scaffold main.py with empty functions for mic capture, .wav loading, and ffmpeg conversion.
+- Research: `sounddevice` is the standard for cross-platform mic capture in Python; on macOS, permissions may require user approval. For .wav loading, `soundfile` or `scipy.io.wavfile` are common. `ffmpeg-python` can be used for format conversion if needed.
+- Will implement placeholder (stub) functions first, then test imports and permissions.
+
+# AUDIO INGESTION: ffmpeg Binary Issue
+- Issue: ffmpeg-python failed because the ffmpeg binary was not installed or not in PATH ([Errno 2] No such file or directory: 'ffmpeg').
+- Fix: Installed ffmpeg using Homebrew: `brew install ffmpeg`.
+- Reasoning: ffmpeg is a system-level tool, not a Python package, so it cannot be added to requirements.txt. It must be installed via Homebrew (macOS) or another package manager, and tracked in a separate setup file for reproducibility.

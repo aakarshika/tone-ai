@@ -10,10 +10,22 @@
 
 ## 🚨 SETUP CHECKLIST
 
-⬜ Install Python 3.11, `ffmpeg`, `portaudio`  
-⬜ Create `venv`, install core libs: `whisperx`, `pyannote`, `torch`, `sounddevice`  
+✅ Install Python 3.11, `ffmpeg`, `portaudio`  
+✅ Create `venv`, install core libs: `whisperx`, `pyannote`, `torch`, `sounddevice`  
 ⬜ Setup repo structure: `main.py`, `config.yaml`, `logs/`, `BUILD_LOG.md`  
 ⬜ Test with placeholder audio file
+
+**Status:**
+- All Python dependencies and system libraries are now installed and working (including PyAudio/PortAudio fix on macOS).
+- Remaining: Set up repo structure files, and run a test with a placeholder audio file to validate the environment.
+
+---
+
+## 🚩 Today's Focus
+
+- Confirm all dependencies and system libraries are installed and working (including audio libraries).
+- Scaffold `main.py` with empty functions for AUDIO INGESTION (mic capture, .wav loader, ffmpeg conversion).
+- Research and implement the AUDIO INGESTION section of the pipeline.
 
 ---
 
@@ -23,14 +35,27 @@
 
 **♻️ Tradeoffs**: Real-time streaming complexity vs batch processing simplicity
 
+✅ All audio dependencies (`sounddevice`, `ffmpeg`, `portaudio`, etc.) are importable and working (see test_installs.py summary: 30/30 modules OK).
+
+✅ File-based ingestion (.mp3→.wav) is working and tested end-to-end.
+
 ⬜ **TODOs**:
-- Implement `sounddevice` for live mic capture
-- Add `.wav` file loader with `ffmpeg` conversion
-- Test mic permissions on macOS
+- [x] Implement .wav file loader using `soundfile` (load audio data, print shape/duration)
+- [x] Implement ffmpeg conversion function (convert mp3→wav, check output file)
+- [x] Add logging and error messages for each function
+- [x] Run end-to-end test: load audio file → convert if needed → print info
+- [ ] Implement mic input using `sounddevice` (record short audio, stream to pipeline)
+- [ ] Test real-time audio stream from mic
+- [ ] Ensure fallback to file-based ingestion for testing
+- [ ] Add error handling for mic permissions and device issues
 
-**🛠️ Currently Doing**: -
+**Reasoning:**
+- Mic input is required for real-time/production use.
+- File-based ingestion is used for testing and reproducibility.
 
-**📦 Libraries**: `sounddevice`, `ffmpeg`
+**🛠️ Currently Doing**: Implementing mic input and real-time audio stream
+
+**📦 Libraries**: `sounddevice`, `soundfile`, `ffmpeg-python`
 
 ---
 

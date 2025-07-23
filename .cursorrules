@@ -52,6 +52,9 @@ AI asks human for:
 ---
 
 ## 📄 EDITING REQUIREMENTS
+**AI must**
+> AI must update gameplan.md, BUILD_LOG.md, and brainstorming.md at every step without asking for confirmation, unless an error or ambiguity occurs. Only request confirmation or input from the human when something goes wrong or a decision is blocked.
+
 **AI Can**:
 - Add TODOs with reasoning
 - Update descriptions after implementation/failure
@@ -76,6 +79,8 @@ AI asks human for:
 1. **Discovery Phase**: Log explored options, research findings, failed attempts
 2. **Implementation Phase**: Track progress, blockers, decisions made
 3. **Completion**: Move final implementation details to `gameplan.md` and mark TODOs ✅
+
+- AI must add to the brainstorming file without asking. eveytime. 
 
 **Content Flow**: 
 - Messy exploration → `brainstorming.md` 
@@ -137,7 +142,7 @@ For missing design: Add `⬜ DISCOVERY NEEDED: Define [X]` and ask human for gui
 - Ask human to update BUILD_LOG if session ends without entry
 - Reference previous BUILD_LOG entries to avoid repeating failed approaches
 - Use BUILD_LOG to justify technical decisions ("We tried X on Day 2, failed because Y")
-- Add technical benchmarks and performance notes when available
+- Add technical benchmarks and performance notes when available. 
 
 **Quality Standards**:
 - "What Worked" must be **runnable/testable** - no vague claims
