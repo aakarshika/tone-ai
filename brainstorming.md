@@ -124,3 +124,82 @@
 - Plan: Build a React UI to show audio playback, mapped text, and waveform
 - UI will be used for debugging, demo, and validating pipeline results
 - Open questions: How to best sync backend chunked output with frontend playback? What data format is best for integration?
+
+# OUTPUT & VISUALIZATION: UI Architecture Brainstorm
+- Plan: Implement a React app with Tailwind CSS for the frontend
+- Backend will remain in Python, serving audio and transcript data to the React frontend (via API or static files)
+- Options considered:
+  1. Move everything to React (JS-only): Would require porting all audio processing and ML to JS/TS, which is not practical for this project
+  2. Do the UI in Python (e.g., Streamlit): Fast for prototyping, but less flexible for custom, modern UIs and harder to integrate with React ecosystem
+  3. React frontend + Python backend: Best fit for modularity, flexibility, and future extensibility; allows us to keep ML/audio logic in Python and build a modern UI
+- Decision: Proceed with React + Tailwind CSS frontend, Python backend
+
+---
+
+## [UI Build] - Main Layout Implemented
+- Added audio recording and upload controls to App.jsx
+- Audio playback and waveform placeholder included
+- Real-time transcript area added (awaiting backend integration)
+- Next: Integrate backend for speech-to-text and tone analysis, and add results UI
+
+---
+
+## [Design Brainstorm] - Real-time Chunked Transcription
+- Idea: Frontend splits audio into chunks, sends each chunk to Python backend for transcription.
+- Backend transcribes each chunk, maintains a timestamped transcript.
+- UI updates transcript in real time as each chunk is processed.
+- Pros: Enables near real-time feedback, scalable for long files, easier error recovery.
+- Cons: Chunking on frontend may be tricky (browser APIs, sync with playback), network latency, chunk boundaries may split words/sentences.
+- Feasibility: Yes, with careful chunking and backend state management. Need to define chunk size, overlap, and transcript merging logic.
+- Next: Prototype chunk upload from UI, backend API for chunk transcription, and real-time transcript update in UI.
+
+---
+
+## [Decision] - Switch to Python UI for Rapid Prototyping
+- Decided to pause React/Node UI work for now.
+- Will build the UI in Python (Gradio or Streamlit) for faster iteration and direct integration with audio/ML code.
+- The React structure will be kept in the repo for future use if/when a more advanced frontend is needed.
+- Focus: Ship a working, mic-first, real-time demo ASAP.
+
+---
+
+## [Vision Refinement] - Mic-First, Real-Time, Rolling Context
+- Project vision: UI should feel like a live, always-on mic experience.
+- Transcript is just one of several real-time outputs (tone, emotion, etc.).
+- Results (transcript, analysis) are updated incrementally, not as a full batch.
+- Python backend assumed to return results for each second of audio, with a 2s processing delay.
+- UI maintains a rolling context, updating display as new results arrive.
+- Audio file upload is only for testing/dev, not the main user flow.
+- Next: Prototype mic capture, rolling transcript/analysis update in UI, and mock backend delay.
+
+---
+
+## [Action] - Building Python UI (Gradio)
+- Proceeding to build the Python UI for a mic-first, real-time demo.
+- Will scaffold a Gradio app that captures mic input, processes audio in real time, and displays rolling transcript/analysis.
+- Streamlit can be used later if needed, but Gradio is default for now due to audio/ML demo simplicity.
+
+---
+
+## [UI/UX Update] - Chunked Waveform Frames with Per-Chunk Transcript
+- After recording (mic) or uploading (file), split audio into 5-second chunks.
+- Display each chunk as a frame in the waveform window (visual timeline of audio).
+- Each chunk/frame will show the transcript for that chunk.
+- Applies to both mic and file input.
+- Enables real-time and chunk-level analysis, and sets up for future tone/emotion display per chunk.
+- Next: Implement chunking logic, waveform frame display, and per-chunk transcript in Gradio UI.
+
+---
+
+## [Testing Plan] - Simulate Real-Time Chunk Arrival in Python
+- For backend testing, simulate the JS frontend by processing an audio file in Python.
+- Split the file into small chunks (e.g., 1s), and send/process each chunk one by one, with a delay between them.
+- This mimics real-time streaming and allows backend and UI logic to be tested before full JS integration.
+- Next: Write a Python test harness that reads an audio file, splits it, and feeds chunks to the backend as if they are arriving live.
+
+# UI Layout Change - Full Screen
+- Changed main UI from a centered, boxed layout to a full-width, full-height responsive layout.
+- Reason: User requested a more immersive, less constrained experience for the speech-to-text demo.
+- Tradeoff: Lost the card-like focus, but gained more space for logs, transcript, and future visualizations (e.g., waveform).
+- Next: Monitor user feedback for further tweaks (e.g., padding, background contrast).
+- Increased the height of the system logs window (from h-32 to h-64) for better readability and to allow more log lines to be visible at once.

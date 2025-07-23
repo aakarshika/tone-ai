@@ -101,7 +101,9 @@
 - UI is needed for debugging, demo, and user feedback
 - Visualizing text alignment with audio helps validate pipeline accuracy
 
-**🛠️ Currently Doing**: Planning and scaffolding React UI
+⬜ TODO: Make system logs window larger for improved usability and visibility of log history.
+
+🛠️ Currently Doing: Increased the height of the system logs window in the UI (from h-32 to h-64).
 
 **📦 Libraries**: React, wavesurfer.js (for waveform), any modern React toolchain
 
@@ -214,6 +216,36 @@
 **🛠️ Currently Doing**: -
 
 ---
+
+## 🖥️ UI Module (Updated for Modern UX)
+
+📌 **Vision**: 
+Deliver a beautiful, modern, and user-friendly web UI for Tone AI, prioritizing real-time feedback, clarity, and accessibility. The UI should be visually appealing, responsive, and provide clear feedback for all user actions and system states.
+
+⬜ **TODOs**:
+- [x] Refactor layout for clear visual hierarchy (centered card/panel, section dividers)
+- [x] Apply modern styling with Tailwind CSS (colors, gradients, rounded corners, fonts)
+- [x] Add status indicators for WebSocket connection, recording, and file upload
+- [x] Implement transcript display in a styled, scrollable box
+- [x] Show logs in a collapsible or secondary panel with color coding
+- [x] Use large, accessible controls with tooltips/helper text
+- [x] Ensure full responsiveness for desktop and mobile
+- [x] Polish for best-in-class UX (animation, spacing, feedback)
+- [ ] TODO: Revisit and fix mic chunking and playback (not working reliably, UI hidden for now)
+- [x] Focus on file upload chunking, playback, and UI (mic code retained but hidden)
+- [x] File upload chunking and playback are working as intended
+- [ ] Add robust error handling for file upload and decoding
+- [ ] Add chunk table UI: display each chunk with columns -chunk, created, sent,recieved, transcript, play button, 
+- [ ] Add play button for each chunk to play the corresponding audio section (chunked mp3 or wav)
+- [ ] Enable interactive chunked audio exploration in the UI
+- [ ] After file upload, create all chunks but do not send them immediately
+- [ ] Wait for user to play the audio; as playback reaches each chunk mark (e.g., 3s, 6s, ...), send the corresponding chunk to the backend
+- [ ] Repeat for each chunk as playback progresses
+- [ ] UI should visually indicate which chunks have been sent and which are pending
+
+🛠️ **Currently Doing**:
+- Modern UI/UX refactor complete for mic/recording (real-time chunking works)
+- Investigating and fixing file upload chunking and error handling
 
 ## ⬜ DONE WHEN:
 - Pipeline processes live mic input → structured output
