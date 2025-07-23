@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Tone AI - Your AI beat friend."
+    />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Tone AI</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script type="module" src="/src/main.jsx"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/seriously.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.blur.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.sepia.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.tvglitch.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.edge.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.vignette.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.filmgrain.js"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js"></script>
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    
+    <!-- Fingerpose -->
+    <script src="https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js"></script>
+    <script>
+      // Enhanced fallback: Try multiple sources for Fingerpose
+      setTimeout(() => {
+        if (typeof window.Fingerpose === 'undefined') {
+          console.log('Primary Fingerpose failed, trying alternative sources...');
+          
+          const sources = [
+            'https://unpkg.com/fingerpose@0.1.0/dist/fingerpose.js',
+            'https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/fingerpose/0.1.0/fingerpose.js'
+          ];
+          
+          let currentSource = 0;
+          
+          const tryNextSource = () => {
+            if (currentSource >= sources.length) {
+              console.error('All Fingerpose sources failed to load');
+              return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = sources[currentSource];
+            script.onload = () => console.log(`Fingerpose loaded from source ${currentSource + 1}: ${sources[currentSource]}`);
+            script.onerror = () => {
+              console.log(`Fingerpose failed from source ${currentSource + 1}: ${sources[currentSource]}`);
+              currentSource++;
+              tryNextSource();
+            };
+            document.head.appendChild(script);
+          };
+          
+          tryNextSource();
+        }
+      }, 3000);
+    </script>
+  </body>
+</html>
