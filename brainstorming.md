@@ -91,3 +91,36 @@
 - Issue: ffmpeg-python failed because the ffmpeg binary was not installed or not in PATH ([Errno 2] No such file or directory: 'ffmpeg').
 - Fix: Installed ffmpeg using Homebrew: `brew install ffmpeg`.
 - Reasoning: ffmpeg is a system-level tool, not a Python package, so it cannot be added to requirements.txt. It must be installed via Homebrew (macOS) or another package manager, and tracked in a separate setup file for reproducibility.
+
+# AUDIO INGESTION: Mic Input Complete
+- Mic input implemented and tested (recorded mic_test.wav, loaded and printed info)
+- Both file and mic ingestion now work for pipeline input
+
+# Next: Speech-to-Text
+- Plan: Implement and test faster-whisper as primary local speech-to-text engine
+- Add whisper.cpp as CPU fallback
+- Need to research: optimal chunk size for real-time streaming, error handling for transcription failures
+
+# SPEECH-TO-TEXT: Real-Time Pipeline Brainstorm
+- Requirement: Both mic and file modes will provide input as a list of 5-second audio clips (chunks)
+- Goal: Real-time recognition and mapping to emotion/scene as fast as possible
+- Open Questions:
+  1. How should we segment a never-ending audio stream for real-time recognition? Is fixed 5s chunking optimal, or should we use adaptive/overlapping windows?
+  2. How to minimize latency between speech input and emotion/scene output?
+  3. What is the best way to handle partial/incomplete utterances at chunk boundaries?
+- TODO: Research chunking strategies and real-time streaming best practices for speech-to-text and emotion mapping
+- Next step: Implement basic batch speech-to-text on 5s audio clips as a baseline before optimizing for real-time
+
+# SPEECH-TO-TEXT: Batch Implementation Plan
+- Plan: Implement batch speech-to-text on a list of 5s audio clips using faster-whisper
+- Step 1: Split a .wav file into 5s chunks (simulate real-time input)
+- Step 2: Transcribe each chunk in sequence using faster-whisper
+- Technical notes: Need to ensure chunk boundaries are handled cleanly, and batching does not introduce extra latency
+
+# SPEECH-TO-TEXT: Batch Complete
+- Batch speech-to-text on 5s audio clips is working and tested (see logs for chunked transcription)
+
+# Next: Output & Visualization
+- Plan: Build a React UI to show audio playback, mapped text, and waveform
+- UI will be used for debugging, demo, and validating pipeline results
+- Open questions: How to best sync backend chunked output with frontend playback? What data format is best for integration?

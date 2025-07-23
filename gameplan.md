@@ -39,21 +39,16 @@
 
 ✅ File-based ingestion (.mp3→.wav) is working and tested end-to-end.
 
+✅ Mic input implemented and tested (recorded mic_test.wav, loaded and printed info).
+
 ⬜ **TODOs**:
-- [x] Implement .wav file loader using `soundfile` (load audio data, print shape/duration)
-- [x] Implement ffmpeg conversion function (convert mp3→wav, check output file)
-- [x] Add logging and error messages for each function
-- [x] Run end-to-end test: load audio file → convert if needed → print info
-- [ ] Implement mic input using `sounddevice` (record short audio, stream to pipeline)
-- [ ] Test real-time audio stream from mic
-- [ ] Ensure fallback to file-based ingestion for testing
-- [ ] Add error handling for mic permissions and device issues
+- [ ] Implement stream input instead of single file
 
 **Reasoning:**
 - Mic input is required for real-time/production use.
 - File-based ingestion is used for testing and reproducibility.
 
-**🛠️ Currently Doing**: Implementing mic input and real-time audio stream
+**🛠️ Currently Doing**: Moving to speech-to-text pipeline
 
 **📦 Libraries**: `sounddevice`, `soundfile`, `ffmpeg-python`
 
@@ -63,18 +58,52 @@
 
 **📌 Vision**: Convert audio chunks to text with reasonable speed/accuracy balance
 
-**♻️ Tradeoffs**: 
+**♻️ Tradeoffs**:
 - Local: `faster-whisper` (GPU), `whisper.cpp` (CPU) - Free but slower
 - API: OpenAI Whisper API - Fast/accurate but paid
 
-⬜ **TODOs**:
-- Implement `faster-whisper` as primary
-- Add `whisper.cpp` CPU fallback
-- Determine optimal chunk size for real-time
+✅ Batch speech-to-text on 5s audio clips is working and tested (see logs for chunked transcription results).
 
-**🛠️ Currently Doing**: -
+⬜ **TODOs**:
+- [ ] Prepare for real-time streaming after batch baseline is working
+- [ ] Add logging and error handling for transcription failures
+
+**For later (after batch baseline):**
+- [ ] Implement `faster-whisper` as primary speech-to-text engine (real-time/streaming mode)
+- [ ] Add `whisper.cpp` CPU fallback for non-GPU systems
+- [ ] Test transcription on both mic and file-based audio (real-time and batch)
+- [ ] Determine optimal chunk size for real-time streaming
+
+**Reasoning:**
+- Batch mode on 5s chunks simulates real-time input and is easier to debug
+- Once batch works, can optimize for true streaming/low-latency
+
+**🛠️ Currently Doing**: Moving to UI development for output/visualization
 
 **📦 Libraries**: `faster-whisper`, `whisper.cpp`
+
+---
+
+## 🎨 OUTPUT & VISUALIZATION
+
+**📌 Vision**: Show audio playback with mapped text and waveform in a modern UI
+
+⬜ **TODOs**:
+- [ ] Scaffold a React UI to display:
+    - Audio file playback
+    - Synchronized text transcript mapped to audio
+    - Audio waveform visualization
+- [ ] Integrate backend output (chunked text, timestamps) with frontend
+- [ ] Add basic styling and controls (play/pause, seek)
+- [ ] Enable debugging and demo for pipeline results
+
+**Reasoning:**
+- UI is needed for debugging, demo, and user feedback
+- Visualizing text alignment with audio helps validate pipeline accuracy
+
+**🛠️ Currently Doing**: Planning and scaffolding React UI
+
+**📦 Libraries**: React, wavesurfer.js (for waveform), any modern React toolchain
 
 ---
 
@@ -157,21 +186,6 @@
 ⬜ **DISCOVERY NEEDED**: Best async pattern for audio pipeline
 
 **📦 Libraries**: `asyncio`, `threading`
-
----
-
-## 🎨 OUTPUT & VISUALIZATION
-
-**📌 Vision**: Debug-friendly output and basic UI for results
-
-⬜ **TODOs**:
-- Console table output with timestamps
-- JSON export for structured data
-- Simple Streamlit UI (optional)
-
-**🛠️ Currently Doing**: -
-
-**📦 Libraries**: `rich` (console), `streamlit` (optional UI)
 
 ---
 

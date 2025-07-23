@@ -175,3 +175,13 @@ This project uses a structured AI-human collaboration approach:
 - Advanced emotion taxonomy
 - Visual waveform interface
 - Export to video editing tools
+
+## Audio Ingestion
+- Supports both file-based (.mp3/.wav) and mic-based audio input
+- File-based ingestion: mp3→wav conversion and .wav loading tested end-to-end
+- Mic-based ingestion: records audio from default mic, saves as .wav, and loads for processing
+
+## Next Step: Speech-to-Text
+- The next pipeline stage is speech-to-text transcription
+- Will use local models: faster-whisper (GPU) as primary, whisper.cpp (CPU) as fallback
+- Both mic and file input will be supported for transcription

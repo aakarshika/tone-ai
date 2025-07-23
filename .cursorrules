@@ -53,7 +53,7 @@ AI asks human for:
 
 ## 📄 EDITING REQUIREMENTS
 **AI must**
-> AI must update gameplan.md, BUILD_LOG.md, and brainstorming.md at every step without asking for confirmation, unless an error or ambiguity occurs. Only request confirmation or input from the human when something goes wrong or a decision is blocked.
+> AI must update gameplan.md, BUILD_LOG.md, and brainstorming.md at almost every step without asking for confirmation, unless an error or ambiguity occurs. Only request confirmation or input from the human when something goes wrong or a decision is blocked.
 
 **AI Can**:
 - Add TODOs with reasoning
