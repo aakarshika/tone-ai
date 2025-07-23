@@ -1,0 +1,49 @@
+
+
+# Audio handling
+sounddevice
+ffmpeg-python
+pyaudio
+
+# Speech-to-text
+faster-whisper
+whisperx
+openai-whisper
+
+# Diarization
+pyannote.audio
+resemblyzer
+webrtcvad
+
+# Emotion recognition
+speechbrain
+opensmile
+torchaudio
+transformers
+
+# Scene beat classification (local LLM + ChatGPT API)
+ollama
+openai
+
+# Utilities
+numpy
+scipy
+pandas
+pyyaml
+tqdm
+matplotlib
+aiohttp
+asyncio
+rich
+
+# Deep learning
+torch
+torchaudio
+tensorflow  # for compatibility, optional
+
+# Optional visualization/debug
+notebook
+gradio  # UI preview
+
+# Environment
+python-dotenv

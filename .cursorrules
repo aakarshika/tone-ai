@@ -1,0 +1,169 @@
+# 📜 AI COLLABORATION RULES
+
+> Simplified ruleset for AI collaborator. Governs how AI reads/edits `gameplan.md` and contributes to code.
+
+---
+
+## 🔐 AUTHORITY
+- ✅ AI **can read and add to** `gameplan.md` with reasoning
+- ❌ AI **cannot edit** this `rules.md` file
+- ✅ Human **can edit both** files
+
+---
+
+## 📖 READING REQUIREMENTS
+Parse `gameplan.md` as modular pipeline blocks:
+- 📌 **Vision**: Architectural purpose
+- ♻️ **Tradeoffs**: Alternatives when blocked  
+- ⬜ **TODOs**: Editable tasks (AI can add with reasoning)
+- 🛠️ **Currently Doing**: Live, editable progress
+
+**AI Must**: Maintain factual accuracy and visible reasoning before adding TODOs.
+
+---
+
+## 🧠 CODING PRINCIPLES
+- ✅ Readable, efficient, modular
+- ✅ Easy to replace components
+- ✅ Minimal code blocks per stage
+- ✅ Placeholder functions only when research needed
+
+---
+
+## 🕵️ HUMAN COLLABORATION
+AI asks human for:
+1. 📦 Install/test/run tools locally
+2. 🔍 Web research & debugging  
+3. 📸 Audio inputs & sample files
+4. 🔗 Deployments (AWS, Streamlit, etc.)
+5. 📝 Subjective reviews
+
+**Format**: Specific, scoped requests with `🔄 Waiting on human:` labels in TODOs.
+
+---
+
+## 📚 RESEARCH BEHAVIOR
+- Start from existing toolkits in `gameplan.md`
+- Only suggest new tools if current fails (with reasoning)
+- Justify all changes via comments
+- Small working examples first, then integrate
+- Ask human to test rather than assume
+
+---
+
+## 📄 EDITING REQUIREMENTS
+**AI Can**:
+- Add TODOs with reasoning
+- Update descriptions after implementation/failure
+- Add benchmark results and decision logs
+
+**AI Cannot**:
+- Remove vision statements or headers
+- Modify tradeoffs without permission
+- Reorder pipeline without request
+- Delete content (suggest only)
+
+**When Done**: Mark TODOs ✅ only after implementation + human confirmation.
+
+---
+
+## 📝 BRAINSTORMING FILE
+**Purpose**: `brainstorming.md` is the **working memory** for current exploration and decisions.
+
+**AI Can**: Edit all contents, keep entries brief and focused on current work.
+
+**Usage Pattern**:
+1. **Discovery Phase**: Log explored options, research findings, failed attempts
+2. **Implementation Phase**: Track progress, blockers, decisions made
+3. **Completion**: Move final implementation details to `gameplan.md` and mark TODOs ✅
+
+**Content Flow**: 
+- Messy exploration → `brainstorming.md` 
+- Finalized decisions → `gameplan.md`
+- Every AI/human step gets logged in brainstorming
+
+**Update Frequency**: Most actively changed file during development.
+
+## 🧩 DISCOVERY MODE
+For missing design: Add `⬜ DISCOVERY NEEDED: Define [X]` and ask human for guidance.
+
+---
+
+## 🧭 CORE PHILOSOPHY
+**"Ship, not show off."**
+
+### Non-Negotiable Rules:
+1. **No Black Boxes** - Open-source or documented APIs only
+2. **Daily Wins** - Run/log/visualize something every day  
+3. **Working > Optimal** - Choose defaults, don't tune unless broken
+4. **No Reinventing** - Use existing libraries and demos
+5. **Freeze Scope** - No mid-project feature creep
+
+### Coding Standards:
+- **Code + Logs** - Every module prints status
+- **3 States** - Mark components: tested ✅ → stubbed 🧱 → broken ❌  
+- **Single Source** - One `pipeline.py`, one `config.yaml`
+- **20-Min Rule** - Stuck? Move on or stub with `# FIXME:`
+
+### File Structure:
+```
+/audio_ai_tone
+├── /models, /scripts, /ui
+├── main.py, config.yaml  
+├── logs/, README.md
+└── BUILD_LOG.md (daily progress)
+```
+
+## 📊 BUILD LOG RULES
+**Purpose**: `BUILD_LOG.md` is the **daily accountability system** and project memory.
+
+**Daily Updates Required**:
+- Every development session MUST end with a BUILD_LOG entry
+- Update even if "nothing worked" - failure is valuable data
+- Both AI and human update it after each significant step
+
+**Entry Format** (Non-negotiable):
+```markdown
+## Day X - [Focus Area]
+### ✅ What Worked: [Specific successes, even small ones]
+### ❌ What Didn't Work: [Failures with brief why]
+### 📚 What Was Learned: [Technical insights, gotchas]
+### 🔄 What Was Skipped: [Conscious decisions to skip]
+### 🎯 Tomorrow's Focus: [Next concrete steps]
+### 🧠 Notes & Decisions: [Architecture choices, tradeoffs]
+```
+
+**AI Must**:
+- Ask human to update BUILD_LOG if session ends without entry
+- Reference previous BUILD_LOG entries to avoid repeating failed approaches
+- Use BUILD_LOG to justify technical decisions ("We tried X on Day 2, failed because Y")
+- Add technical benchmarks and performance notes when available
+
+**Quality Standards**:
+- "What Worked" must be **runnable/testable** - no vague claims
+- "What Didn't Work" must include **specific error or blocking reason**
+- "What Was Learned" should help **future debugging** - include error messages, version conflicts, etc.
+- "Tomorrow's Focus" must be **actionable tasks**, not exploration
+
+**Weekly Reviews**:
+- Every 7 days, add weekly summary with major blockers and key learnings
+- Track architecture decisions that affected the whole pipeline
+- Note performance benchmarks and model comparison results
+
+---
+
+## ⚠️ COMPLIANCE
+Every AI response must:
+- Indicate which vision/rule was followed with ✨
+- Sanity-check requests against rules
+- Explain misalignments and suggest alternatives
+
+
+
+
+# Key points:
+- AI can edit gameplan.md and brainstorming.md with reasoning
+- AI cannot edit rules.md
+- Follow modular pipeline architecture
+- Local-first approach with API fallbacks
+- Update brainstorming.md on every step
