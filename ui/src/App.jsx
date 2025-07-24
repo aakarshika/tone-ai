@@ -1,6 +1,6 @@
 // File: src/App.jsx
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
@@ -23,50 +23,115 @@ function arrayBufferToBase64(buffer) {
 }
 
 function base64ToWavBlob(base64, sampleRate) {
-  // Convert base64 PCM float32 to WAV Blob for playback
-  const pcm = new Float32Array(new Uint8Array(atob(base64).split('').map(c => c.charCodeAt(0))).buffer);
-  // WAV header
-  const numChannels = 1;
-  const bytesPerSample = 2;
-  const blockAlign = numChannels * bytesPerSample;
-  const byteRate = sampleRate * blockAlign;
-  const buffer = new ArrayBuffer(44 + pcm.length * bytesPerSample);
-  const view = new DataView(buffer);
-  // RIFF identifier 'RIFF'
-  [82, 73, 70, 70].forEach((v, i) => view.setUint8(i, v));
-  view.setUint32(4, 36 + pcm.length * bytesPerSample, true); // file length
-  [87, 65, 86, 69].forEach((v, i) => view.setUint8(8 + i, v)); // 'WAVE'
-  [102, 109, 116, 32].forEach((v, i) => view.setUint8(12 + i, v)); // 'fmt '
-  view.setUint32(16, 16, true); // PCM chunk size
-  view.setUint16(20, 1, true); // PCM format
-  view.setUint16(22, numChannels, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, byteRate, true);
-  view.setUint16(32, blockAlign, true);
-  view.setUint16(34, bytesPerSample * 8, true);
-  [100, 97, 116, 97].forEach((v, i) => view.setUint8(36 + i, v)); // 'data'
-  view.setUint32(40, pcm.length * bytesPerSample, true);
-  // PCM samples (float32 to int16)
-  for (let i = 0; i < pcm.length; i++) {
-    let s = Math.max(-1, Math.min(1, pcm[i]));
-    view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
-  return new Blob([buffer], { type: 'audio/wav' });
+  
+  // Create WAV header
+  const wavHeader = new ArrayBuffer(44);
+  const view = new DataView(wavHeader);
+  
+  // RIFF header
+  view.setUint32(0, 0x52494646, false); // "RIFF"
+  view.setUint32(4, 36 + bytes.length, true); // File size
+  view.setUint32(8, 0x57415645, false); // "WAVE"
+  
+  // fmt chunk
+  view.setUint32(12, 0x666D7420, false); // "fmt "
+  view.setUint32(16, 16, true); // fmt chunk size
+  view.setUint16(20, 1, true); // Audio format (PCM)
+  view.setUint16(22, 1, true); // Channels
+  view.setUint32(24, sampleRate, true); // Sample rate
+  view.setUint32(28, sampleRate * 2, true); // Byte rate
+  view.setUint16(32, 2, true); // Block align
+  view.setUint16(34, 16, true); // Bits per sample
+  
+  // data chunk
+  view.setUint32(36, 0x64617461, false); // "data"
+  view.setUint32(40, bytes.length, true); // Data size
+  
+  const wavBlob = new Blob([wavHeader, bytes], { type: 'audio/wav' });
+  return wavBlob;
+}
+
+// Function to merge overlapping transcripts intelligently
+function mergeOverlappingTranscripts(transcripts) {
+  if (transcripts.length === 0) return '';
+  if (transcripts.length === 1) return transcripts[0];
+  
+  let merged = transcripts[0];
+  
+  for (let i = 1; i < transcripts.length; i++) {
+    const current = transcripts[i].trim();
+    if (!current) continue;
+    
+    // Find the best overlap point
+    const overlapPoint = findBestOverlap(merged, current);
+    
+    if (overlapPoint > 0) {
+      // Remove the overlapping part from the current transcript
+      const nonOverlapping = current.substring(overlapPoint);
+      merged += ' ' + nonOverlapping;
+    } else {
+      // No significant overlap, just append
+      merged += ' ' + current;
+    }
+  }
+  
+  return merged.trim();
+}
+
+// Helper function to find the best overlap between two transcript segments
+function findBestOverlap(prev, current) {
+  const words1 = prev.split(/\s+/).filter(w => w.length > 0);
+  const words2 = current.split(/\s+/).filter(w => w.length > 0);
+  
+  // Look for overlap of at least 2 words (reduced from 3 for better performance)
+  for (let overlap = Math.min(words1.length, words2.length, 3); overlap >= 2; overlap--) {
+    const end1 = words1.slice(-overlap).join(' ').toLowerCase();
+    const start2 = words2.slice(0, overlap).join(' ').toLowerCase();
+    
+    if (end1 === start2) {
+      return current.toLowerCase().indexOf(start2) + start2.length;
+    }
+  }
+  
+  return 0; // No significant overlap found
 }
 
 const App = () => {
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const [wsStatus, setWsStatus] = useState('disconnected');
   const [transcript, setTranscript] = useState('');
   const [logs, setLogs] = useState('');
-  const [wsStatus, setWsStatus] = useState('connecting');
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [chunkTable, setChunkTable] = useState([]); // [{idx, created, sent, received, transcript, audioB64, sampleRate}]
+  const CHUNK_SEC = 5; // Increased from 3s to 5s for better performance
+  const OVERLAP_SEC = 0.5; // Reduced overlap from 1s to 0.5s
+  const STEP_SEC = CHUNK_SEC - OVERLAP_SEC; // 4.5 second step size
+  const BATCH_MODE = true; // Enable batch processing for better performance
+  const audioPlayerRef = useRef(null);
   const wsRef = useRef(null);
   const chunkIdxRef = useRef(0);
-  const [chunkTable, setChunkTable] = useState([]); // [{idx, created, sent, received, transcript, audioB64, sampleRate}]
-  const CHUNK_SEC = 3;
-  const audioPlayerRef = useRef(null);
+  const mergeTimeoutRef = useRef(null);
+  const pendingTranscriptsRef = useRef([]);
+
+  // Debounced transcript merging
+  const debouncedMergeTranscripts = useCallback(() => {
+    if (mergeTimeoutRef.current) {
+      clearTimeout(mergeTimeoutRef.current);
+    }
+    
+    mergeTimeoutRef.current = setTimeout(() => {
+      if (pendingTranscriptsRef.current.length > 0) {
+        const mergedTranscript = mergeOverlappingTranscripts(pendingTranscriptsRef.current);
+        setTranscript(mergedTranscript);
+        pendingTranscriptsRef.current = [];
+      }
+    }, 100); // 100ms debounce
+  }, []);
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -80,11 +145,25 @@ const App = () => {
     };
     wsRef.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
-      setTranscript((prev) => prev + '\n' + msg.transcript);
       setLogs((prev) => prev + `[WS] Received transcript for chunk ${msg.chunk_idx + 1}\n`);
-      setChunkTable((prev) => prev.map(row =>
-        row.idx === msg.chunk_idx ? { ...row, received: true, transcript: msg.transcript } : row
-      ));
+      
+      // Update chunk table with received transcript
+      setChunkTable((prev) => {
+        const updated = prev.map(row =>
+          row.idx === msg.chunk_idx ? { ...row, received: true, transcript: msg.transcript } : row
+        );
+        
+        // Add to pending transcripts for debounced merging
+        const receivedTranscripts = updated
+          .filter(row => row.received && row.transcript)
+          .sort((a, b) => a.idx - b.idx) // Sort by chunk index
+          .map(row => row.transcript);
+        
+        pendingTranscriptsRef.current = receivedTranscripts;
+        debouncedMergeTranscripts();
+        
+        return updated;
+      });
     };
     wsRef.current.onclose = () => {
       setLogs((prev) => prev + '[WS] Disconnected\n');
@@ -96,6 +175,9 @@ const App = () => {
     };
     return () => {
       wsRef.current && wsRef.current.close();
+      if (mergeTimeoutRef.current) {
+        clearTimeout(mergeTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -170,9 +252,12 @@ const App = () => {
           const sampleRate = audioBuffer.sampleRate;
           const channelData = audioBuffer.getChannelData(0);
           const chunkSamples = sampleRate * CHUNK_SEC; // 3s chunks
+          const stepSamples = sampleRate * STEP_SEC; // 2s step size
           let chunkRows = [];
-          for (let i = 0; i < channelData.length; i += chunkSamples) {
+          for (let i = 0; i < channelData.length; i += stepSamples) {
             const chunk = channelData.slice(i, i + chunkSamples);
+            // Skip chunks that are too short (less than 1 second)
+            if (chunk.length < sampleRate) continue;
             const chunkBuffer = new Float32Array(chunk);
             const audioB64 = arrayBufferToBase64(chunkBuffer.buffer);
             const idx = chunkIdxRef.current++;
@@ -219,7 +304,7 @@ const App = () => {
       const currentTime = audio.currentTime;
       // For each chunk, if playback has crossed its start and it hasn't been sent, send it
       chunkTable.forEach(row => {
-        const chunkStart = row.idx * CHUNK_SEC;
+        const chunkStart = row.idx * STEP_SEC; // Use STEP_SEC for overlapping chunks
         if (currentTime >= chunkStart && !row.sent && !sentChunksRef.current.has(row.idx)) {
           sendChunkByIdx(row.idx);
         }

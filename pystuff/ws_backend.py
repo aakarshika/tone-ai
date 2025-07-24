@@ -25,8 +25,9 @@ app = FastAPI()
 whisper_model = None
 if WhisperModel is not None:
     try:
-        whisper_model = WhisperModel("small", device="cpu")
-        print("[INFO] Whisper model loaded successfully.")
+        # Use "tiny" model for faster processing
+        whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+        print("[INFO] Whisper tiny model loaded successfully for fast processing.")
     except Exception as e:
         print(f"[ERROR] Failed to load Whisper model: {e}")
         whisper_model = None
