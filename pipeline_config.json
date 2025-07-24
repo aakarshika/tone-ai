@@ -1,0 +1,21 @@
+{
+  "audio": {
+    "default_sample_rate": 16000,
+    "chunk_duration": 5.0,
+    "overlap_duration": 0.5,
+    "min_chunk_duration": 0.5,
+    "normalize_audio": true
+  },
+  "transcription": {
+    "model_size": "tiny",
+    "device": "cpu",
+    "compute_type": "int8",
+    "language": null,
+    "beam_size": 5,
+    "best_of": 5
+  },
+  "enable_speaker_diarization": false,
+  "enable_emotion_detection": false,
+  "enable_scene_classification": false,
+  "log_level": "INFO"
+}

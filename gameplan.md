@@ -178,16 +178,24 @@
 
 **♻️ Tradeoffs**: Async streaming vs synchronous batch processing
 
-⬜ **TODOs**:
-- Create `pipeline.py` with modular components
-- Implement basic async audio processing
-- Add component swap capability (local ↔ API)
+✅ **TODOs**:
+- [x] Refactor monolithic `ws_backend.py` into modular pipeline components
+- [x] Create separate modules for each pipeline stage:
+  - `audio_processor.py` - Audio loading, chunking, format conversion ✅
+  - `transcription.py` - Speech-to-text with Whisper ✅
+  - `speaker_diarization.py` - Speaker separation (future)
+  - `emotion_detector.py` - Emotion classification (future)
+  - `scene_classifier.py` - Scene beat classification (future)
+  - `pipeline_orchestrator.py` - Main pipeline coordination ✅
+- [x] Implement async processing for better performance
+- [x] Add component swap capability (local ↔ API)
+- [x] Create configuration system for pipeline settings
 
-**🛠️ Currently Doing**: -
+**🛠️ Currently Doing**: ✅ Refactored backend running and integrated with frontend - ready for speaker diarization
 
 ⬜ **DISCOVERY NEEDED**: Best async pattern for audio pipeline
 
-**📦 Libraries**: `asyncio`, `threading`
+**📦 Libraries**: `asyncio`, `threading`, `pydantic` (for config)
 
 ---
 

@@ -138,6 +138,23 @@
   3. Test on multi-speaker audio samples
   4. Integrate speaker labels with transcript output
 
+# PIPELINE REFACTORING: Modular Architecture Complete
+- **Problem**: Monolithic `ws_backend.py` was hard to maintain and extend
+- **Solution**: Split into modular pipeline components with clear separation of concerns
+- **New Architecture**:
+  - `pipeline/audio_processor.py` - Audio loading, chunking, format conversion
+  - `pipeline/transcription.py` - Speech-to-text with Whisper
+  - `pipeline/orchestrator.py` - Main pipeline coordination
+  - `pipeline/config.py` - Configuration management
+  - `ws_backend_refactored.py` - New WebSocket backend using modular pipeline
+- **Benefits**:
+  - Easy to add new components (speaker diarization, emotion detection)
+  - Better testability and maintainability
+  - Configuration-driven pipeline settings
+  - Async processing support
+  - Component swap capability (local ↔ API)
+- **Status**: ✅ Complete and ready for testing
+
 # SPEECH-TO-TEXT: Real-Time Pipeline Brainstorm
 - Requirement: Both mic and file modes will provide input as a list of 5-second audio clips (chunks)
 - Goal: Real-time recognition and mapping to emotion/scene as fast as possible

@@ -355,12 +355,12 @@ const App = () => {
             {transcript || <span className="text-gray-400">[Speech-to-text output will appear here]</span>}
           </div>
         </div>
-        <div className="w-full">
+        {/* <div className="w-full">
           <h2 className="text-lg font-semibold text-indigo-700 mb-1">Logs</h2>
           <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 h-200 overflow-y-auto text-green-200 font-mono whitespace-pre-wrap text-xs shadow-inner">
             {logs || <span className="text-gray-500">[System logs will appear here]</span>}
           </div>
-        </div>
+        </div> */}
         <div className="w-full mt-4 text-indigo-700">
           <h2 className="text-lg font-semibold text-indigo-700 mb-1">Chunks</h2>
           <div className="overflow-x-auto">
